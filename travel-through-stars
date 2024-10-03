@@ -1,0 +1,65 @@
+// Find the Storyline slide container
+var slide = document.querySelector('.slide-container'); 
+
+// Create a canvas element
+var canvas = document.createElement('canvas');
+canvas.id = 'starsCanvas';
+canvas.style.position = 'absolute';
+canvas.style.top = 0;
+canvas.style.left = 0;
+canvas.style.width = '100%';
+canvas.style.height = '100%';
+canvas.style.pointerEvents = 'none'; // Allow clicks to pass through the canvas
+canvas.style.zIndex = '-1'; // Set a lower z-index to place the canvas behind buttons
+canvas.width = slide.clientWidth;  // Set the width of the canvas to the width of the slide
+canvas.height = slide.clientHeight; // Set the height of the canvas to the height of the slide
+slide.appendChild(canvas); // Append the canvas to the slide container
+
+// Get the canvas context
+var ctx = canvas.getContext('2d');
+
+// Define star properties
+var stars = [];
+var numStars = 300;
+var speed = 0.5;
+
+// Create the stars
+for (var i = 0; i < numStars; i++) {
+    var star = {
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        z: Math.random() * canvas.width
+    };
+    stars.push(star);
+}
+
+// Function to animate stars
+function animateStars() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    for (var i = 0; i < numStars; i++) {
+        var star = stars[i];
+        star.z -= speed;
+
+        if (star.z <= 0) {
+            star.x = Math.random() * canvas.width;
+            star.y = Math.random() * canvas.height;
+            star.z = canvas.width;
+        }
+
+        var sx = (star.x - canvas.width / 2) * (canvas.width / star.z) + canvas.width / 2;
+        var sy = (star.y - canvas.height / 2) * (canvas.width / star.z) + canvas.height / 2;
+        var size = (canvas.width / star.z) * 1.5;
+        var color = "rgba(255, 255, 255, " + (1 - star.z / canvas.width) + ")";
+
+        ctx.beginPath();
+        ctx.arc(sx, sy, size, 0, Math.PI * 2);
+        ctx.fillStyle = color;
+        ctx.fill();
+    }
+    
+    requestAnimationFrame(animateStars);
+}
+
+// Start the animation
+animateStars();
