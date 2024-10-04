@@ -1,0 +1,14 @@
+// Ensure that the button exists before proceeding
+var nextButton = document.getElementById("next");
+
+// Function to stop blinking
+function stopBlinking() {
+    if (window.blinkInterval) {
+        clearInterval(window.blinkInterval);  // Stop the blinking interval
+        window.blinkInterval = null;  // Reset the interval variable
+    }
+    nextButton.style.opacity = "1";  // Set opacity to fully visible after stopping
+}
+
+// Call stopBlinking() to undo the blinking effect
+stopBlinking();
