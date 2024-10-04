@@ -1,0 +1,18 @@
+// Declare the blinkInterval globally to access it later
+if (window.blinkInterval) {
+    clearInterval(window.blinkInterval);  // Make sure any previous intervals are cleared
+}
+
+var nextButton = document.getElementById("next");
+
+// Define a function to toggle opacity
+function blink() {
+    if (nextButton.style.opacity === "1") {
+        nextButton.style.opacity = "0.3"; // Make it slightly visible
+    } else {
+        nextButton.style.opacity = "1"; // Fully visible
+    }
+}
+
+// Start blinking every 500 milliseconds (0.5 seconds) and store the interval in the global variable
+window.blinkInterval = setInterval(blink, 500);
