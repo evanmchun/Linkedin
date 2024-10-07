@@ -1,0 +1,91 @@
+var mouseMoved = false;
+var timer;
+var isPaused = false;
+var lightboxCreated = false;
+
+// Reset the timer whenever the mouse moves
+document.addEventListener('mousemove', function() {
+    mouseMoved = true; // Mouse movement detected
+    clearTimeout(timer); // Reset the timer
+    startInactivityTimer(); // Start a new timer
+});
+
+// Start or reset the inactivity timer
+function startInactivityTimer() {
+    timer = setTimeout(function() {
+        if (!mouseMoved && !isPaused) { // Check if no mouse movement and it's not already paused
+            var playPauseButton = document.getElementById('play-pause');
+            if (playPauseButton) {
+                playPauseButton.click(); // Pause the timeline
+                isPaused = true; // Set isPaused to true once paused
+                showInactivityPopup(); // Show the inactivity popup
+            }
+        }
+        mouseMoved = false; // Reset the mouse movement flag
+    }, 4000); // 4000 milliseconds = 4 seconds
+}
+
+// Show the popup when paused due to inactivity
+function showInactivityPopup() {
+    if (!lightboxCreated) {
+        // Create lightbox container
+        var lightbox = document.createElement('div');
+        lightbox.id = 'inactivity-lightbox';
+        lightbox.style.position = 'fixed';
+        lightbox.style.left = '0';
+        lightbox.style.top = '0';
+        lightbox.style.width = '100%';
+        lightbox.style.height = '100%';
+        lightbox.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+        lightbox.style.color = 'white';
+        lightbox.style.display = 'flex';
+        lightbox.style.alignItems = 'center';
+        lightbox.style.justifyContent = 'center';
+        lightbox.style.zIndex = '9999';
+        lightbox.style.textAlign = 'center';
+        lightbox.innerHTML = `
+            <div>
+                <h2>Paused Due to Inactivity</h2>
+                <p>The timeline was paused because there was no mouse movement for 4 seconds.</p>
+                <button id="resume-btn" style="padding: 10px 20px; font-size: 16px; cursor: pointer;">Resume</button>
+            </div>
+        `;
+
+        document.body.appendChild(lightbox);
+        lightboxCreated = true;
+
+        // Add click event to the "Resume" button
+        document.getElementById('resume-btn').addEventListener('click', function() {
+            resumeTimeline();
+            document.body.removeChild(lightbox); // Remove the lightbox after resuming
+            lightboxCreated = false; // Reset flag so lightbox can be created again later
+        });
+    }
+}
+
+// Track if the timeline is resumed after being paused
+function checkResume() {
+    var playPauseButton = document.getElementById('play-pause');
+    
+    if (playPauseButton) {
+        playPauseButton.addEventListener('click', function() {
+            if (isPaused) {
+                // Timeline is resumed, so reset isPaused and restart inactivity detection
+                isPaused = false;
+                startInactivityTimer(); // Restart the inactivity timer when resumed
+            }
+        });
+    }
+}
+
+// Resume the timeline
+function resumeTimeline() {
+    var playPauseButton = document.getElementById('play-pause');
+    if (playPauseButton) {
+        playPauseButton.click(); // Simulate a click to resume the timeline
+    }
+}
+
+// Initialize inactivity timer and resume tracking
+startInactivityTimer();
+checkResume();
