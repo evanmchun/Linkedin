@@ -1,6 +1,43 @@
-setTimeout(function() {
+var mouseMoved = false;
+var timer;
+var isPaused = false;
+
+// Reset the timer whenever the mouse moves
+document.addEventListener('mousemove', function() {
+    mouseMoved = true; // Mouse movement detected
+    clearTimeout(timer); // Reset the timer
+    startInactivityTimer(); // Start a new timer
+});
+
+// Start or reset the inactivity timer
+function startInactivityTimer() {
+    timer = setTimeout(function() {
+        if (!mouseMoved && !isPaused) { // Check if no mouse movement and it's not already paused
+            var playPauseButton = document.getElementById('play-pause');
+            if (playPauseButton) {
+                playPauseButton.click(); // Pause the timeline
+                isPaused = true; // Set isPaused to true once paused
+            }
+        }
+        mouseMoved = false; // Reset the mouse movement flag
+    }, 4000); // 4000 milliseconds = 4 seconds
+}
+
+// Track if the timeline is resumed after being paused
+function checkResume() {
     var playPauseButton = document.getElementById('play-pause');
+    
     if (playPauseButton) {
-        playPauseButton.click(); // Simulates a click to pause the timeline
+        playPauseButton.addEventListener('click', function() {
+            if (isPaused) {
+                // Timeline is resumed, so reset isPaused and restart inactivity detection
+                isPaused = false;
+                startInactivityTimer(); // Restart the inactivity timer when resumed
+            }
+        });
     }
-}, 3000); // Pauses after 3 seconds
+}
+
+// Initialize inactivity timer and resume tracking
+startInactivityTimer();
+checkResume();
