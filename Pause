@@ -1,0 +1,6 @@
+setTimeout(function() {
+    var playPauseButton = document.getElementById('play-pause');
+    if (playPauseButton) {
+        playPauseButton.click(); // Simulates a click to pause the timeline
+    }
+}, 3000); // Pauses after 3 seconds
