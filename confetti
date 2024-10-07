@@ -1,0 +1,112 @@
+(function() {
+    // Define the confetti effect within the slide
+    function ConfettiEffect() {
+        var confettiSettings = {
+            particleCount: 100,
+            spread: 160,
+            startVelocity: 20, // Reduced initial velocity for slower upward movement
+            gravity: 0.1, // Lower gravity for slower falling
+            airResistance: 0.99, // Simulate air resistance
+            origin: { y: 1 } // Start from the bottom
+        };
+
+        // Main confetti function using the slide area
+        (function frame() {
+            // Call the confetti effect popping from below
+            fireConfetti({ ...confettiSettings, angle: 90 }); // Pop straight up from below
+        })();
+    }
+
+    // Manually insert a basic version of the confetti engine that targets the slide
+    function fireConfetti(options) {
+        // Target only the content of the slide's container
+        var slideContent = document.querySelector('.slide'); // Adjusted to find the Storyline slide container
+        if (!slideContent) {
+            slideContent = document.body; // Fallback
+        }
+
+        var canvas = document.createElement("canvas");
+        slideContent.appendChild(canvas);
+        var ctx = canvas.getContext("2d");
+
+        // Set canvas dimensions to fit the slide area
+        canvas.width = slideContent.offsetWidth;
+        canvas.height = slideContent.offsetHeight;
+        canvas.style.position = 'absolute';
+        canvas.style.top = '0';
+        canvas.style.left = '0';
+        canvas.style.zIndex = '9999';
+        canvas.style.pointerEvents = 'none';
+
+        // Generate confetti particles
+        var particles = [];
+        for (var i = 0; i < options.particleCount; i++) {
+            particles.push({
+                x: Math.random() * canvas.width, // Random X position
+                y: canvas.height - 10, // Start near the bottom of the canvas
+                velocityX: (Math.random() * 2 - 1) * 2, // Random horizontal velocity
+                velocityY: -(Math.random() * options.startVelocity + 5), // Upward velocity
+                size: Math.random() * 10 + 5, // Random particle size
+                color: `hsl(${Math.random() * 360}, 100%, 50%)`,
+                rotation: Math.random() * 360, // Random initial rotation
+                rotationSpeed: (Math.random() * 2 - 1) * 2, // Random rotation speed
+                atRest: false // Tracks whether the particle has come to rest at the bottom
+            });
+        }
+
+        // Animate the confetti particles with gravity, air resistance, and rotation
+        function animateConfetti() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            particles.forEach(function(particle) {
+                // Only render the particle if it has not hit the bottom yet
+                if (!particle.atRest) {
+                    // Draw the falling confetti with 3D-like rotation
+                    ctx.save();
+                    ctx.translate(particle.x + particle.size / 2, particle.y + particle.size / 2); // Move origin to center of the particle
+                    ctx.rotate(particle.rotation * Math.PI / 180); // Rotate the particle
+                    ctx.fillStyle = particle.color;
+                    ctx.fillRect(-particle.size / 2, -particle.size / 2, particle.size, particle.size); // Draw rotated confetti
+                    ctx.restore();
+
+                    // Update the particle's position
+                    particle.x += particle.velocityX; // Horizontal movement
+                    particle.y += particle.velocityY; // Vertical movement
+
+                    // Apply gravity
+                    particle.velocityY += options.gravity;
+
+                    // Apply air resistance
+                    particle.velocityX *= options.airResistance;
+                    particle.velocityY *= options.airResistance;
+
+                    // Rotate the confetti for 3D effect
+                    particle.rotation += particle.rotationSpeed;
+
+                    // If particle hits the bottom, stop it and mark it as at rest
+                    if (particle.y >= canvas.height - particle.size) {
+                        particle.y = canvas.height - particle.size;
+                        particle.velocityY = 0;
+                        particle.velocityX = 0;
+                        particle.atRest = true;
+                    }
+                } else {
+                    // Draw the confetti that has come to rest
+                    ctx.save();
+                    ctx.translate(particle.x + particle.size / 2, particle.y + particle.size / 2);
+                    ctx.rotate(particle.rotation * Math.PI / 180);
+                    ctx.fillStyle = particle.color;
+                    ctx.fillRect(-particle.size / 2, -particle.size / 2, particle.size, particle.size);
+                    ctx.restore();
+                }
+            });
+
+            requestAnimationFrame(animateConfetti); // Continue animating
+        }
+
+        animateConfetti();
+    }
+
+    // Call the confetti effect
+    ConfettiEffect();
+})();
