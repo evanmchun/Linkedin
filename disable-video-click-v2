@@ -1,0 +1,7 @@
+// Target the specific video container or a child element inside the slide window
+var videoContainer = document.querySelector('#slide-window .video-player-limited-container');
+
+// If the video container is found, disable pointer events only for that container
+if (videoContainer) {
+    videoContainer.style.pointerEvents = 'none'; // Disable interaction for the specific container
+}
