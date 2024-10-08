@@ -1,0 +1,10 @@
+var slideContainer = document.querySelector('#slide-window');
+
+// If the slide container is found, loop through all child elements and disable their pointer events
+if (slideContainer) {
+    var elements = slideContainer.querySelectorAll('*');
+    
+    elements.forEach(function(element) {
+        element.style.pointerEvents = 'none'; // Disable interaction for every element
+    });
+}
